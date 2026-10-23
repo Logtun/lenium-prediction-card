@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>My Lenium Prediction · make your call card</title>
+<meta name="description" content="Make a shareable card of your prediction: pick a market category, ask the question, call YES or NO with your confidence. Fan-made by @iamlogtun. Not an official Lenium product.">
+<meta name="theme-color" content="#0f1222">
+<meta property="og:type" content="website">
+<meta property="og:title" content="My Lenium Prediction. Make your call card">
+<meta property="og:description" content="Pick a market, make your call, share your card on X. Fan-made, not official.">
+<meta property="og:image" content="og.jpg?v=1">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="675">
+<meta property="og:image:alt" content="A sample My Lenium Prediction card">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="My Lenium Prediction. Make your call card">
+<meta name="twitter:description" content="Pick a market, make your call, share your card on X. Fan-made, not official.">
+<meta name="twitter:image" content="og.jpg?v=1">
+<link rel="icon" href="favicon.png" type="image/png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="preconnect" href="https://api.fxtwitter.com" crossorigin>
+<link rel="preconnect" href="https://pbs.twimg.com" crossorigin>
+<link rel="preload" href="assets/bricolage.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="preload" href="assets/geist.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="styles.css?v=2">
+</head>
+<body>
+<header class="top">
+  <a class="brand" href="https://www.lenium.capital/" target="_blank" rel="noopener" aria-label="Lenium">
+    <img src="assets/mark.png" alt="" width="32" height="32">
+    <img src="assets/word.png" alt="Lenium" class="word" height="22">
+  </a>
+  <span class="tag">Prediction Card</span>
+</header>
+
+<main class="wrap">
+  <section class="intro">
+    <p class="eyebrow">Fan-made · not official</p>
+    <h1>Make your call. <span class="accent">Share your card.</span></h1>
+    <p class="lede">Pick a market, ask the question, call <b class="y">YES</b> or <b class="n">NO</b> and say how sure you are.</p>
+  </section>
+
+  <section class="preview" aria-label="Card preview">
+    <div class="canvas-frame">
+      <canvas id="card" width="1200" height="675" role="img" aria-label="Your Lenium prediction card"></canvas>
+    </div>
+    <div class="actions">
+      <button class="btn btn-primary" id="btnDownload" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m0 0l-5-5m5 5l5-5M4 19h16"/></svg>
+        Download PNG
+      </button>
+      <button class="btn btn-x" id="btnShareX" type="button">
+        <svg viewBox="0 0 24 24" aria-hidden="true" class="fill"><path d="M17.75 3h3.07l-6.7 7.66L22 21h-6.17l-4.83-6.32L5.47 21H2.4l7.17-8.2L2 3h6.33l4.37 5.77L17.75 3zm-1.08 16.17h1.7L7.4 4.73H5.58l11.09 14.44z"/></svg>
+        Share on X
+      </button>
+      <button class="btn btn-ghost" id="btnCopy" type="button" hidden>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="12" rx="2"/><path d="M16 8V6a2 2 0 00-2-2H6a2 2 0 00-2 2v8a2 2 0 002 2h2"/></svg>
+        Copy image
+      </button>
+    </div>
+    <div class="caption-box">
+      <div class="cap-head"><label for="caption">Your caption</label><button class="btn btn-ghost btn-sm" id="btnCopyCaption" type="button">Copy caption</button></div>
+      <textarea id="caption" rows="6" readonly></textarea>
+    </div>
+    <p class="hint">On your phone, <strong>Share on X</strong> opens your share sheet with the card and caption: just pick X. On a computer it saves the card and opens X with the caption ready.</p>
+  </section>
+
+  <section class="form" aria-label="Make your prediction">
+    <div class="field">
+      <label for="handle">1 · Your X handle</label>
+      <div class="input-prefix"><span>@</span><input id="handle" name="x_handle" type="text" maxlength="16" placeholder="iamlogtun" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false" enterkeyhint="done"></div>
+      <div class="xlookup" id="xLookup" aria-live="polite" data-state="idle">
+        <span class="xl-av" id="xlAv" aria-hidden="true"></span>
+        <span class="xl-text small" id="xlText">Enter your handle and we’ll pull your X name and photo.</span>
+      </div>
+    </div>
+    <fieldset class="field">
+      <legend>2 · Market category</legend>
+      <div class="cats" id="cats"></div>
+    </fieldset>
+    <div class="field">
+      <label for="question">3 · Your prediction</label>
+      <div class="q-row">
+        <input id="question" type="text" maxlength="110" placeholder="Bitcoin above $150K by year end?">
+        <button class="btn btn-ghost btn-icon" id="btnRandomQ" type="button" title="Random starter" aria-label="Random starter question">🎲</button>
+      </div>
+      <div class="starters" id="starters" aria-label="Starter questions"></div>
+    </div>
+    <fieldset class="field">
+      <legend>4 · Your call</legend>
+      <div class="sides">
+        <button class="side-btn yes" type="button" data-side="YES" aria-pressed="true">YES</button>
+        <button class="side-btn no" type="button" data-side="NO" aria-pressed="false">NO</button>
+      </div>
+      <label class="conf-label" for="conf">How sure are you? <output id="confOut" for="conf">75%</output></label>
+      <input id="conf" type="range" min="50" max="99" step="1" value="75">
+      <span class="muted small">Your own confidence, not a market price. Not financial advice.</span>
+    </fieldset>
+  </section>
+
+  <section class="cta">
+    <h2>Think you have an edge?</h2>
+    <p>Lenium is a prediction market prop firm: pass a simulated evaluation on live prediction markets and earn up to 90% of the profits.</p>
+    <a class="btn btn-primary btn-lg" href="https://www.lenium.capital/" target="_blank" rel="noopener">Visit lenium.capital →</a>
+  </section>
+</main>
+
+<footer class="foot">
+  <p>Fan-made · Lenium accounts are simulated evaluation accounts · <a href="https://www.lenium.capital/" target="_blank" rel="noopener">lenium.capital</a></p>
+  <p>made by <a href="https://x.com/iamlogtun" target="_blank" rel="noopener">@iamlogtun</a> · not official</p>
+</footer>
+
+<div class="modal" id="modal" hidden>
+  <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <button class="modal-x" id="modalClose" type="button" aria-label="Close">×</button>
+    <h3 id="modalTitle">Save your card</h3>
+    <p class="muted" id="modalSteps">Press and hold the image, then tap <strong>Save to Photos</strong>.</p>
+    <img id="modalImg" alt="Your Lenium prediction card">
+    <a class="btn btn-x modal-openx" id="modalOpenX" href="https://x.com/intent/tweet" target="_blank" rel="noopener" hidden>Open X →</a>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script src="app.js?v=2" defer></script>
+</body>
+</html>
